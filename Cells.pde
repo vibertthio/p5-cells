@@ -44,8 +44,8 @@ void settings() {
 
 void setup() {
   MidiBus.list();
-  // midi = new MidiBus(this, "from Max 1", -1);
-  midi = new MidiBus(this, 0, -1);
+  midi = new MidiBus(this, "from Max 1", -1);
+  // midi = new MidiBus(this, 0, -1);
 
   background(20);
   canvas = createGraphics(600, 400, P3D);
