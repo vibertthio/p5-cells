@@ -79,8 +79,12 @@ void keyPressed() {
   if (key == '7') {
     system.blink();
   }
-  if (key == '8') {
-    println("press");
+  if (key == ' ') {
+    system.turnRandOneOnFor(50, 20);
+    system.turnRandOneOnFor(50, 20);
+  }
+  if (key == 'z') {
+    system.bangComplexAsyncSequence(1);
   }
 }
 
@@ -230,16 +234,21 @@ public void controlEvent(ControlEvent theEvent) {
         system.triggerRandomMode();
         break;
       case (5):
-        system.triggerSequenceMode(0, 200);
+        // system.triggerSequence(0, 100);
+        system.triggerSequence(0, 200);
         break;
       case (6):
-        system.triggerSequenceMode(1, 200);
+        system.triggerSequence(1, 100);
+        // system.triggerSequence(1, 200);
         break;
       case (7):
-        system.triggerSequenceMode(2, 200);
+        system.triggerSequence(2, 100);
+        // system.triggerSequence(2, 200);
         break;
       case (8):
-        system.triggerComplexSequenceMode(0);
+        // system.triggerComplexSequence(0);
+        // system.triggerAsyncSequence(0);
+        system.bangComplexAsyncSequence(0);
         break;
     }
   }
@@ -294,7 +303,7 @@ void noteOn(int channel, int pitch, int velocity) {
         }
         break;
       case(72) :
-        system.triggerComplexSequenceMode(1);
+        system.triggerComplexSequence(1);
         break;
       case(73) :
         if (velocity != 0) {

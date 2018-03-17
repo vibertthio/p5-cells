@@ -61,18 +61,17 @@ class System {
     canvas.beginDraw();
     canvas.background(0);
 
+    updateSequence();
+    updateComplexSequence();
+    updateAsyncSequence();
+    updateComplexAsyncSequence();
+
     // modes
-    if (modes[0]) { // sequence
-      sequenceMode();
-    }
     if (modes[1]) { // blink
       blinkMode();
     }
     if (modes[2]) {
       randomMode();
-    }
-    if (modes[3]) {
-      complexSequenceMode();
     }
 
     for (int i = 0; i < nOfLights; i++) {
@@ -160,6 +159,9 @@ class System {
     lights[id].blink();
   }
 
+  void turnRandOneOnFor(int time, int ll) {
+    turnOneOnFor(int(random(nOfLights)),time, ll);
+  }
 
   /**
    * Performance
@@ -169,35 +171,350 @@ class System {
     turnOneOff(id, release);
   }
 
-  int sequenceTime = 100;
-  int sequenceDur = 50;
-  int sequenceIndex = 0;
-  int sequenceCount = 0;
-  int sequenceCountLimit = 5;
+  boolean turnSequenceActivate = false;
+  int sequenceTriggerIndex = 0;
+  boolean bangSequence = false;
+  int turnSequenceTime = 100;
+  int turnSequenceDur = 50;
+  int turnSequenceIndex = 0;
+  int turnSequenceCount = 0;
+  int turnSequenceCountLimit = 5;
   int[][] sequenceSet = {
     { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
     { 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 },
     { 7, 8, 6, 9, 5, 10, 4, 11, 3, 12, 2, 13, 1, 14, 0, 15 },
     { 0, 1, 0, 1, 5, 4, 5, 4, 3, 2, 3, 2 },
+    { 0, 11, 4, 8 },
+    { 9, 2, 1, 10 }, // 5
+    { 0, 4, 8, 1, 5, 9 },
+    { 10, 6, 2, 11, 7, 3 },
+    { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 },
+    { 8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3 },
+    { 0, 1, 2, 3}, // 10
+    { 3, 2, 1, 0},
+    { 0, 3, 2, 1},
+    { 0, 2, 1, 3},
+    { 4, 5, 6, 7},
+    { 7, 6, 5, 4}, // 15
+    { 4, 7, 5, 6},
+    { 7, 5, 6, 4},
+    { 8, 9, 10, 11},
+    { 11, 10, 9, 8},
+    { 8, 11, 10, 9}, // 20
+    { 8, 10, 9, 11},
+    { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
+    { 11, 10, 9, 8, 3, 2, 1, 0 },
+    { 0, 1, 2, 3, 8, 9, 10, 11 },
+    { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ,0}, // 25
+    { 0, 7, 8, 3, 4, 11},
+    { 11, 4, 3, 8, 7, 0},
+    { 0, 1, 2, 3, 7, 6, 5, 4, 8, 9, 10, 11,
+      10, 9, 8, 4, 5, 6, 7, 3, 2, 1, 0 },
+    { 3, 2, 1, 0, 4, 5, 6, 7, 11, 10, 9, 8,
+      9, 10, 11, 7, 6, 5, 4, 0, 1, 2, 3 },
+    { 0, 0, 0, 0}, // 30 // this one if for random sequence, don't modify it
   };
   int[] sequence;
-  void triggerSequenceMode(int index, int time) {
-    turnOff();
-    modes[0] = !modes[0];
-    sequenceTime = time;
-    sequence = sequenceSet[index%sequenceSet.length];
-    sequenceIndex = 0;
-    sequenceCount = 0;
+
+  void triggerSequence() {
+    triggerSequence(sequenceTriggerIndex);
+    // turnSequenceActivate = !turnSequenceActivate;
+    // turnSequenceCount = 0;
   }
-  void sequenceMode() {
-    sequenceCount++;
-    if (sequenceCount > sequenceCountLimit) {
-      turnOneOnFor(sequence[sequenceIndex], sequenceDur, sequenceTime);
-      sequenceIndex = (sequenceIndex + 1) % sequence.length;
-      sequenceCount = 0;
+  void triggerSequence(int index) {
+    turnOff();
+    // turnSequenceActivate = true;
+    if (index == sequenceTriggerIndex) {
+      turnSequenceActivate = !turnSequenceActivate;
+    } else {
+      turnSequenceActivate = true;
+    }
+
+    sequenceTriggerIndex = index;
+    sequence = sequenceSet[index%sequenceSet.length];
+    turnSequenceIndex = 0;
+    turnSequenceCount = 0;
+  }
+  void triggerSequence(int index, int time) {
+    triggerSequence(index);
+    turnSequenceTime = time;
+  }
+  void bangSequence(int index) {
+    triggerSequence(index);
+    bangSequence = true;
+  }
+  void bangSequence(int index, int time) {
+    triggerSequence(index, time);
+    bangSequence = true;
+  }
+  void updateSequence() {
+    if (turnSequenceActivate) {
+      turnSequenceCount++;
+      if (turnSequenceCount > turnSequenceCountLimit) {
+        // int prev = (turnSequenceIndex > 0)? (turnSequenceIndex - 1) : (sequence.length - 1);
+        // turnOneOn(sequence[turnSequenceIndex], turnSequenceTime);
+        // turnOneOff(sequence[prev], turnSequenceTime);
+        turnOneOnFor(sequence[turnSequenceIndex], turnSequenceDur, turnSequenceTime);
+        turnSequenceIndex = (turnSequenceIndex + 1) % sequence.length;
+        turnSequenceCount = 0;
+
+        if (bangSequence && turnSequenceIndex == 0) {
+          triggerSequence();
+          bangSequence = false;
+        }
+      }
     }
   }
 
+
+  boolean complexSequenceActivate = false;
+  int complexSequenceTriggerIndex = 0;
+  boolean bangComplexSequence = false;
+  int complexSequenceTime = 100;
+  int complexSequenceDur = 50;
+  int complexSequenceIndex = 0;
+  int complexSequenceCount = 0;
+  int complexSequenceCountLimit = 5;
+  int[][][] complexSequenceSet = {
+    {
+      {0, 1, 2, 3},
+      {4, 5, 6, 7},
+      {8, 9, 10, 11},
+      {12, 13, 14, 15},
+    },
+    {
+      {12, 13, 14, 15},
+      {8, 9, 10, 11},
+      {4, 5, 6, 7},
+      {0, 1, 2, 3},
+    },
+    {
+      {0, 4, 8, 12},
+      {1, 5, 9, 13},
+      {2, 6, 10, 14},
+      {3, 7, 11, 15},
+    },
+    {
+      {3, 7, 11, 15},
+      {2, 6, 10, 14},
+      {1, 5, 9, 13},
+      {0, 4, 8, 12},
+    },
+  };
+  int[][] complexSequence;
+  void triggerComplexSequence() {
+    triggerComplexSequence(complexSequenceTriggerIndex);
+    // complexSequenceActivate = !complexSequenceActivate;
+    // complexSequenceCount = 0;
+  }
+  void triggerComplexSequence(int index) {
+    if (index == complexSequenceTriggerIndex) {
+      complexSequenceActivate = !complexSequenceActivate;
+    } else {
+      complexSequenceActivate = true;
+    }
+
+    complexSequenceTriggerIndex = index;
+    complexSequence = complexSequenceSet[index%complexSequenceSet.length];
+    complexSequenceIndex = 0;
+    complexSequenceCount = 0;
+  }
+  void bangComplexSequence(int index) {
+    triggerComplexSequence(index);
+    bangComplexSequence = true;
+  }
+  void updateComplexSequence() {
+    if (complexSequenceActivate) {
+      complexSequenceCount++;
+      if (complexSequenceCount > complexSequenceCountLimit) {
+        for (int i = 0, n = complexSequence[complexSequenceIndex].length; i < n; i++) {
+          turnOneOnFor(complexSequence[complexSequenceIndex][i], complexSequenceTime, complexSequenceDur);
+        }
+        complexSequenceIndex = (complexSequenceIndex + 1) % complexSequence.length;
+        complexSequenceCount = 0;
+
+        if (bangComplexSequence && complexSequenceIndex == 0) {
+          triggerComplexSequence();
+          bangComplexSequence = false;
+        }
+      }
+    }
+  }
+
+  // asynce sequence （同個數字要被cue到兩次才會開關。 一次亮暗一條）
+  boolean asyncSequenceActivate = false;
+  int asyncSequenceTriggerIndex = 0;
+  boolean bangAsyncSequence = false;
+  int asyncSequenceTime = 50;
+  int asyncSequenceIndex = 0;
+  int asyncSequenceCount = 0;
+  int asyncSequenceCountLimit = 2;
+  int[][] asyncSequenceSet = {
+    { 0, 1, 2, 3, 3, 2, 1, 0 },     //0
+    { 4, 5, 6, 7, 7, 6, 5, 4 },
+    { 8, 9, 10, 11, 11, 10, 9, 8 },
+
+    { 3, 2, 1, 0, 0, 1, 2, 3 },
+    { 7, 6, 5, 4, 4, 5, 6, 7 },
+    { 11, 10, 9, 8, 8, 9, 10, 11 },  //5
+
+    { 0, 1, 2, 3, 7, 6, 5, 4, 8, 9, 10, 11,
+      11, 10, 9, 8, 4, 5, 6, 7, 3, 2, 1, 0 },  //6
+    { 3, 2, 1, 0, 4, 5, 6, 7, 11, 10, 9, 8,
+      8, 9, 10, 11, 7, 6, 5, 4, 0, 1, 2, 3 },  //7
+  };
+  boolean[] asyncRecord = {
+    false, false, false, false,
+    false, false, false, false,
+    false, false, false, false,
+    false, false, false, false,
+  };
+  int[] asyncSequence;
+
+  void triggerAsyncSequence() {
+    triggerAsyncSequence(asyncSequenceTriggerIndex);
+    // asyncSequenceActivate = !asyncSequenceActivate;
+    // asyncSequenceCount = 0;
+  }
+  void triggerAsyncSequence(int index) {
+    for (int i = 0, n = nOfLights; i < n; i++) {
+      asyncRecord[i] = false;
+    }
+    turnOff();
+    if (index == asyncSequenceTriggerIndex) {
+      asyncSequenceActivate = !asyncSequenceActivate;
+    } else {
+      asyncSequenceActivate = true;
+    }
+
+    asyncSequenceTriggerIndex = index;
+    asyncSequence = asyncSequenceSet[index%asyncSequenceSet.length];
+    asyncSequenceIndex = 0;
+    asyncSequenceCount = 0;
+  }
+  void bangAsyncSequence(int index) {
+    triggerAsyncSequence(index);
+    bangAsyncSequence = true;
+  }
+  void updateAsyncSequence() {
+    if (asyncSequenceActivate) {
+      asyncSequenceCount++;
+      if (asyncSequenceCount > asyncSequenceCountLimit) {
+
+        if (asyncRecord[asyncSequence[asyncSequenceIndex]]) {
+          turnOneOff(asyncSequence[asyncSequenceIndex], asyncSequenceTime);
+        } else {
+          turnOneOn(asyncSequence[asyncSequenceIndex], asyncSequenceTime);
+        }
+        asyncRecord[asyncSequence[asyncSequenceIndex]] = !asyncRecord[asyncSequence[asyncSequenceIndex]];
+        asyncSequenceIndex = (asyncSequenceIndex + 1) % asyncSequence.length;
+        asyncSequenceCount = 0;
+
+        if (bangAsyncSequence && asyncSequenceIndex == 0) {
+          triggerAsyncSequence();
+          bangAsyncSequence = false;
+        }
+      }
+    }
+  }
+
+  // complex async sequence （一次亮暗好幾條）
+  boolean complexAsyncSequenceActivate = false;
+  int complexAsyncSequenceTriggerIndex = 0;
+  boolean bangComplexAsyncSequence = false;
+  int complexAsyncSequenceTime = 60;
+  int complexAsyncSequenceIndex = 0;
+  int complexAsyncSequenceCount = 0;
+  int complexAsyncSequenceCountLimit = 3;
+  int[][][] complexAsyncSequenceSet = {
+    {
+      { 0, 4, 8 },
+      { 1, 5, 9 },
+      { 2, 6, 10 },
+      { 3, 7, 11 },
+      { 3, 7, 11 },
+      { 2, 6, 10 },
+      { 1, 5, 9 },
+      { 0, 4, 8 },
+    },
+    {
+      {7, 8},
+      {6, 9},
+      {5, 10},
+      {4, 11},
+      {3, 12},
+      {2, 13},
+      {1, 14},
+      {0, 15},
+      { 0, 1, 2, 3, 4, 5, 6, 7,
+        8, 9, 10, 11, 12, 13, 14, 15 },
+    },
+  };
+  boolean[] complexAsyncRecord = {
+    false, false, false, false,
+    false, false, false, false,
+    false, false, false, false,
+    false, false, false, false,
+  };
+  int[][] complexAsyncSequence;
+
+  void triggerComplexAsyncSequence() {
+    triggerComplexAsyncSequence(complexAsyncSequenceTriggerIndex);
+    // complexAsyncSequenceActivate = !complexAsyncSequenceActivate;
+    // complexAsyncSequenceCount = 0;
+  }
+  void triggerComplexAsyncSequence(int index) {
+    for (int i = 0, n = nOfLights; i < n; i++) {
+      complexAsyncRecord[i] = false;
+    }
+    turnOff();
+    if (index == complexAsyncSequenceTriggerIndex) {
+      complexAsyncSequenceActivate = !complexAsyncSequenceActivate;
+    } else {
+      complexAsyncSequenceActivate = true;
+    }
+
+    complexAsyncSequenceTriggerIndex = index;
+    complexAsyncSequence = complexAsyncSequenceSet[index%complexAsyncSequenceSet.length];
+    complexAsyncSequenceIndex = 0;
+    complexAsyncSequenceCount = 0;
+  }
+  void bangComplexAsyncSequence(int index) {
+    if (bangComplexAsyncSequence) {
+      triggerComplexAsyncSequence(index);
+    }
+    triggerComplexAsyncSequence(index);
+    bangComplexAsyncSequence = true;
+  }
+  void updateComplexAsyncSequence() {
+    if (complexAsyncSequenceActivate) {
+      complexAsyncSequenceCount++;
+      if (complexAsyncSequenceCount > complexAsyncSequenceCountLimit) {
+
+        int[] cas = complexAsyncSequence[complexAsyncSequenceIndex];
+        for (int i = 0, n = cas.length; i < n; i++) {
+          if (complexAsyncRecord[cas[i]]) {
+            turnOneOff(cas[i], complexAsyncSequenceTime);
+          } else {
+            turnOneOn(cas[i], complexAsyncSequenceTime);
+          }
+          complexAsyncRecord[cas[i]] = !complexAsyncRecord[cas[i]];
+        }
+        complexAsyncSequenceIndex = (complexAsyncSequenceIndex + 1) % complexAsyncSequence.length;
+        complexAsyncSequenceCount = 0;
+
+        if (bangComplexAsyncSequence && complexAsyncSequenceIndex == 0) {
+          triggerComplexAsyncSequence();
+          bangComplexAsyncSequence = false;
+        }
+      }
+    }
+  }
+
+
+  /**
+   * Others
+   */
   int blinkCount = 0;
   int blinkCountLimit = 5;
   void triggerBlinkMode() {
@@ -228,44 +545,4 @@ class System {
     }
   }
 
-  int complexSequenceTime = 100;
-  int complexSequenceDur = 50;
-  int complexSequenceIndex = 0;
-  int complexSequenceCount = 0;
-  int complexSequenceCountLimit = 10;
-  int[][][] complexSequenceSet = {
-    {
-      {0, 1, 2, 3},
-      {4, 5, 6, 7},
-      {8, 9, 10, 11},
-      {12, 13, 14, 15},
-    },
-    {
-      {0, 1, 2, 3},
-      {12, 13, 14, 15},
-      {4, 5, 6, 7, 8, 9, 10, 11},
-    },
-    {
-      {2, 3},
-      {1, 4},
-      {0, 5},
-    },
-  };
-  int[][] complexSequence;
-  void triggerComplexSequenceMode(int index) {
-    modes[3] = !modes[3];
-    complexSequence = complexSequenceSet[index%complexSequenceSet.length];
-    complexSequenceIndex = 0;
-    complexSequenceCount = 0;
-  }
-  void complexSequenceMode() {
-    complexSequenceCount++;
-    if (complexSequenceCount > complexSequenceCountLimit) {
-      for (int i = 0, n = complexSequence[complexSequenceIndex].length; i < n; i++) {
-        turnOneOnFor(complexSequence[complexSequenceIndex][i], complexSequenceDur, complexSequenceTime);
-      }
-      complexSequenceIndex = (complexSequenceIndex + 1) % complexSequence.length;
-      complexSequenceCount = 0;
-    }
-  }
 }
