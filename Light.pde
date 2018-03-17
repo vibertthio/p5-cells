@@ -75,18 +75,18 @@ class Light {
     canvas.stroke(lightColor, alpha);
     // canvas.ellipse(0, 0, sz, sz);
 
-    if (position == 0) {
+    if (position == 3) {
       canvas.line(1 * sz, 5 * sz, 2 * sz, 6 * sz);
       canvas.line(2 * sz, 6 * sz, 2 * sz, 7 * sz);
-    } else if (position == 1) {
+    } else if (position == 2) {
       canvas.line(0, 0, 0, 3 * sz);
       canvas.line(0, 3 * sz, 1 * sz, 4 * sz);
       canvas.line(1 * sz, 4 * sz, 1 * sz, 7 * sz);
-    }  else if (position == 2) {
+    }  else if (position == 1) {
       canvas.line(-sz, 0, -sz, 3 * sz);
       canvas.line(-sz, 3 * sz, -2 * sz, 4 * sz);
       canvas.line(-2 * sz, 4 * sz, -2 * sz, 7 * sz);
-    }  else if (position == 3) {
+    }  else if (position == 0) {
       canvas.line(-2 * sz, 5 * sz, -3 * sz, 6 * sz);
       canvas.line(-3 * sz, 6 * sz, -3 * sz, 7 * sz);
     }

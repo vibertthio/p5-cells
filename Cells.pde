@@ -69,7 +69,7 @@ void setup() {
 void draw() {
   background(0);
   system.render();
-  sendDmx();
+  // sendDmx();
 }
 
 void keyPressed() {
