@@ -279,6 +279,17 @@ void noteOn(int channel, int pitch, int velocity) {
 
   if (channel == ch) {
     switch(pitch) {
+      case(100) :
+        if (velocity == 127) {
+          system.bangComplexAsyncSequence(1);
+        }
+        break;
+      case(105) :
+        if (velocity == 127) {
+          system.turnRandOneOnFor(50, 20);
+          system.turnRandOneOnFor(50, 20);
+        }
+        break;
       case(65) :
         if (velocity == 0) {
           sendSwitchOSC(0);
