@@ -69,6 +69,7 @@ void setup() {
 void draw() {
   background(0);
   system.render();
+  // DMX output is used in last project, not this one
   // sendDmx();
 }
 
