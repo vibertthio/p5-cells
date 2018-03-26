@@ -85,7 +85,27 @@ void keyPressed() {
     system.turnRandOneOnFor(50, 20);
   }
   if (key == 'z') {
-    system.bangComplexAsyncSequence(1);
+    system.bangComplexAsyncSequence(2);
+  }
+  if (key == 'x') {
+    // system.bangComplexSequence(5);
+    system.triggerComplexSequence(5, 100);
+  }
+  if (key == 'q') {
+    // system.bangComplexSequence(5);
+    system.bangAsyncSequence(0);
+  }
+  if (key == 'w') {
+    // system.bangComplexSequence(5);
+    system.bangAsyncSequence(1);
+  }
+  if (key == 'e') {
+    // system.bangComplexSequence(5);
+    system.bangAsyncSequence(2);
+  }
+  if (key == 'r') {
+    // system.bangComplexSequence(5);
+    system.bangAsyncSequence(3);
   }
 }
 
@@ -249,7 +269,7 @@ public void controlEvent(ControlEvent theEvent) {
       case (8):
         // system.triggerComplexSequence(0);
         // system.triggerAsyncSequence(0);
-        system.bangComplexAsyncSequence(0);
+        system.bangComplexAsyncSequence(1);
         break;
     }
   }

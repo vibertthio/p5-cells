@@ -14,7 +14,8 @@
 class System {
   Light[] lights;
   // int nOfLights = 6;
-  int nOfLights = 16;
+  // int nOfLights = 16;
+  int nOfLights = 17;
 
   // Modes
   boolean[] modes = {
@@ -54,6 +55,8 @@ class System {
     lights[13] = new Light(13, 0, middle + gap[1], 20, 25);
     lights[14] = new Light(14, 0, middle + gap[1], 20, 25);
     lights[15] = new Light(15, 0, middle + gap[1], 20, 25);
+
+    lights[16] = new Light(16, 0, middle, 0, 25);
 
   }
 
@@ -270,8 +273,8 @@ class System {
   boolean complexSequenceActivate = false;
   int complexSequenceTriggerIndex = 0;
   boolean bangComplexSequence = false;
-  int complexSequenceTime = 100;
-  int complexSequenceDur = 50;
+  int complexSequenceTime = 600;
+  int complexSequenceDur = 200;
   int complexSequenceIndex = 0;
   int complexSequenceCount = 0;
   int complexSequenceCountLimit = 5;
@@ -300,6 +303,22 @@ class System {
       {1, 5, 9, 13},
       {0, 4, 8, 12},
     },
+    {
+      {3, 7, 11, 15},
+      {2, 6, 10, 14},
+      {1, 5, 9, 13},
+      {0, 4, 8, 12},
+    },
+    {
+      {7, 8},
+      {6, 9},
+      {5, 10},
+      {4, 11},
+      {3, 12},
+      {2, 13},
+      {1, 14},
+      {0, 15},
+    },
   };
   int[][] complexSequence;
   void triggerComplexSequence() {
@@ -319,6 +338,10 @@ class System {
     complexSequenceIndex = 0;
     complexSequenceCount = 0;
   }
+  void triggerComplexSequence(int index, int time) {
+    triggerComplexSequence(index);
+    complexSequenceTime = time;
+  }
   void bangComplexSequence(int index) {
     triggerComplexSequence(index);
     bangComplexSequence = true;
@@ -328,7 +351,7 @@ class System {
       complexSequenceCount++;
       if (complexSequenceCount > complexSequenceCountLimit) {
         for (int i = 0, n = complexSequence[complexSequenceIndex].length; i < n; i++) {
-          turnOneOnFor(complexSequence[complexSequenceIndex][i], complexSequenceTime, complexSequenceDur);
+          turnOneOnFor(complexSequence[complexSequenceIndex][i], complexSequenceDur, complexSequenceTime);
         }
         complexSequenceIndex = (complexSequenceIndex + 1) % complexSequence.length;
         complexSequenceCount = 0;
@@ -353,6 +376,7 @@ class System {
     { 0, 1, 2, 3, 3, 2, 1, 0 },     //0
     { 4, 5, 6, 7, 7, 6, 5, 4 },
     { 8, 9, 10, 11, 11, 10, 9, 8 },
+    { 12, 13, 14, 15, 15, 14, 13, 12 },
 
     { 3, 2, 1, 0, 0, 1, 2, 3 },
     { 7, 6, 5, 4, 4, 5, 6, 7 },
@@ -362,8 +386,12 @@ class System {
       11, 10, 9, 8, 4, 5, 6, 7, 3, 2, 1, 0 },  //6
     { 3, 2, 1, 0, 4, 5, 6, 7, 11, 10, 9, 8,
       8, 9, 10, 11, 7, 6, 5, 4, 0, 1, 2, 3 },  //7
+    {
+      0, 1, 2, 3,
+    },
   };
   boolean[] asyncRecord = {
+    false, false, false, false,
     false, false, false, false,
     false, false, false, false,
     false, false, false, false,
@@ -425,17 +453,27 @@ class System {
   int complexAsyncSequenceTime = 60;
   int complexAsyncSequenceIndex = 0;
   int complexAsyncSequenceCount = 0;
-  int complexAsyncSequenceCountLimit = 3;
+  int complexAsyncSequenceCountLimit = 2;
   int[][][] complexAsyncSequenceSet = {
     {
-      { 0, 4, 8 },
-      { 1, 5, 9 },
-      { 2, 6, 10 },
-      { 3, 7, 11 },
-      { 3, 7, 11 },
-      { 2, 6, 10 },
-      { 1, 5, 9 },
-      { 0, 4, 8 },
+      { 0, 4, 8, 12 },
+      { 1, 5, 9, 13 },
+      { 2, 6, 10, 14 },
+      { 3, 7, 11, 15 },
+      { 3, 7, 11, 15 },
+      { 2, 6, 10, 14 },
+      { 1, 5, 9, 13 },
+      { 0, 4, 8, 12 },
+    },
+    {
+      { 3, 7, 11, 15 },
+      { 2, 6, 10, 14 },
+      { 1, 5, 9, 13 },
+      { 0, 4, 8, 12 },
+      { 0, 4, 8, 12 },
+      { 1, 5, 9, 13 },
+      { 2, 6, 10, 14 },
+      { 3, 7, 11, 15 },
     },
     {
       {7, 8},
@@ -446,11 +484,20 @@ class System {
       {2, 13},
       {1, 14},
       {0, 15},
-      { 0, 1, 2, 3, 4, 5, 6, 7,
-        8, 9, 10, 11, 12, 13, 14, 15 },
+      {7, 8},
+      {6, 9},
+      {5, 10},
+      {4, 11},
+      {3, 12},
+      {2, 13},
+      {1, 14},
+      {0, 15},
+      // { 0, 1, 2, 3, 4, 5, 6, 7,
+      //   8, 9, 10, 11, 12, 13, 14, 15 },
     },
   };
   boolean[] complexAsyncRecord = {
+    false, false, false, false,
     false, false, false, false,
     false, false, false, false,
     false, false, false, false,
@@ -529,16 +576,18 @@ class System {
   }
 
   int randomCount = 0;
-  int randomCountLimit = 5;
+  int randomCountLimit = 15;
   int randomIndex = 0;
-  int randomTime = 200;
-  int randomDuration = 50;
+  int randomTime = 400;
+  int randomDuration = 200;
   void triggerRandomMode() {
     modes[2] = !modes[2];
   }
   void randomMode() {
     randomCount++;
     if (randomCount > randomCountLimit) {
+      randomIndex = floor(random(nOfLights));
+      turnOneOnFor(randomIndex, randomDuration, randomTime);
       randomIndex = floor(random(nOfLights));
       turnOneOnFor(randomIndex, randomDuration, randomTime);
       randomCount = 0;

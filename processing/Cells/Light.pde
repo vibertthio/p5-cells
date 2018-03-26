@@ -75,7 +75,15 @@ class Light {
     canvas.stroke(lightColor, alpha);
     // canvas.ellipse(0, 0, sz, sz);
 
-    if (position == 3) {
+    if (id == 16) {
+      canvas.noStroke();
+      // canvas.stroke(0, alpha);
+      canvas.fill(lightColor, alpha);
+      canvas.ellipse(-1 * sz, 1.3 * sz, 1.2 * sz, 1.2 * sz);
+      canvas.ellipse(0 * sz, 1.3 * sz, 1.2 * sz, 1.2 * sz);
+      canvas.ellipse(-0.5 * sz, sz, 1.5 * sz, 1.5 * sz);
+    }
+    else if (position == 3) {
       canvas.line(1 * sz, 5 * sz, 2 * sz, 6 * sz);
       canvas.line(2 * sz, 6 * sz, 2 * sz, 7 * sz);
     } else if (position == 2) {
