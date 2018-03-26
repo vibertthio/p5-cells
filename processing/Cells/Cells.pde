@@ -288,6 +288,8 @@ void sendDmx() {
   }
 }
 
+int triggerOn = 0;
+
 //midi bus
 int ch = 15;
 void noteOn(int channel, int pitch, int velocity) {
@@ -300,12 +302,77 @@ void noteOn(int channel, int pitch, int velocity) {
 
   if (channel == ch) {
     switch(pitch) {
+      case(97) :
+        if (velocity == 127) {
+          if (triggerOn == 0) {
+            system.triggerRandomMode();
+            triggerOn = 1;
+          }
+        } else if (velocity == 0) {
+          if (triggerOn == 1) {
+            system.triggerRandomMode();
+            triggerOn = 0;
+          } else if (triggerOn == 2) {
+            system.triggerSequence();
+            triggerOn = 0;
+          } else if (triggerOn == 3) {
+            system.triggerComplexSequence(5, 100);
+            triggerOn = 0;
+          }
+        }
+        break;
+      case(98) :
+        if (velocity == 127) {
+          if (triggerOn == 0) {
+            system.triggerSequence(0, 200);
+            triggerOn = 2;
+          }
+        } else if (velocity == 0) {
+          if (triggerOn == 1) {
+            system.triggerRandomMode();
+            triggerOn = 0;
+          } else if (triggerOn == 2) {
+            system.triggerSequence();
+            triggerOn = 0;
+          } else if (triggerOn == 3) {
+            system.triggerComplexSequence(5, 100);
+            triggerOn = 0;
+          }
+        }
+        break;
+      case(99) :
+        if (velocity == 127) {
+          if (triggerOn == 0) {
+            system.triggerComplexSequence(5, 100);
+            triggerOn = 3;
+          }
+        } else if (velocity == 0) {
+          if (triggerOn == 1) {
+            system.triggerRandomMode();
+            triggerOn = 0;
+          } else if (triggerOn == 2) {
+            system.triggerSequence();
+            triggerOn = 0;
+          } else if (triggerOn == 3) {
+            system.triggerComplexSequence(5, 100);
+            triggerOn = 0;
+          }
+        }
+        break;
+
+
       case(100) :
         if (velocity == 127) {
           system.bangComplexAsyncSequence(1);
         }
         break;
       case(105) :
+        if (velocity == 127) {
+          system.turnRandOneOnFor(50, 20);
+          system.turnRandOneOnFor(50, 20);
+        }
+        break;
+      case(106) :
         if (velocity == 127) {
           system.turnRandOneOnFor(50, 20);
           system.turnRandOneOnFor(50, 20);
