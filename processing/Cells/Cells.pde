@@ -269,7 +269,7 @@ public void controlEvent(ControlEvent theEvent) {
       case (8):
         // system.triggerComplexSequence(0);
         // system.triggerAsyncSequence(0);
-        system.bangComplexAsyncSequence(1);
+        system.bangComplexAsyncSequence(2);
         break;
     }
   }
@@ -363,7 +363,7 @@ void noteOn(int channel, int pitch, int velocity) {
 
       case(100) :
         if (velocity == 127) {
-          system.bangComplexAsyncSequence(1);
+          system.bangComplexAsyncSequence(2);
         }
         break;
       case(105) :
